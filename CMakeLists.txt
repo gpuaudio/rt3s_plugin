@@ -1,7 +1,18 @@
 cmake_minimum_required(VERSION 3.22 FATAL_ERROR)
 cmake_policy(SET CMP0025 NEW)
+cmake_policy(SET CMP0135 NEW)
 
 project(GpuaSourceSeparation VERSION 0.0.1)
+
+if (DEFINED FETCH_LOCATION)
+    # RT3S Model
+    FetchContent_Declare(
+        rt3s_model
+        URL https://github.com/gpuaudio/platform_headers/releases/download/v0.0.1/RT3S_model.zip
+        SOURCE_DIR ${FETCH_LOCATION}/rt3s_model
+    )
+    FetchContent_MakeAvailable(rt3s_model)
+endif()
 
 # Set standard C++ version
 set(CMAKE_CXX_STANDARD 20)
@@ -19,10 +30,12 @@ add_subdirectory(JUCE)
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     list(APPEND plugin_formats VST3)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+    set(install_dir "$ENV{CommonProgramFiles}/VST3")
 endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     list(APPEND plugin_formats AU)
+    # TODO: set install_dir
 endif()
 
 juce_add_plugin(GpuaSourceSeparation
@@ -48,6 +61,24 @@ juce_add_plugin(GpuaSourceSeparation
 # This macro generates the "JuceHeader.h" file and adds the correct include
 # directories to the target. Without this, #include <JuceHeader.h> will fail.
 juce_generate_juce_header(GpuaSourceSeparation)
+
+include (${CMAKE_CURRENT_LIST_DIR}/debug_vars.cmake)
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    if (VST3_DEPLOY)
+        add_custom_command(TARGET GpuaSourceSeparation POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy "${rt3s_model_SOURCE_DIR}/params.bw" "${CMAKE_BINARY_DIR}/SoundSourceSeparation/rt3s_plugin/GpuaSourceSeparation_artefacts/$<CONFIG>/VST3/gpuaudio_source_separation.vst3/Contents/x86_64-win"
+            COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_BINARY_DIR}/SoundSourceSeparation/rt3s_plugin/GpuaSourceSeparation_artefacts/$<CONFIG>/VST3/gpuaudio_source_separation.vst3" "${install_dir}/gpuaudio_source_separation.vst3"
+            COMMAND ${CMAKE_COMMAND} -E echo "VST3 copied to ${install_dir}"
+        )
+    endif()
+endif()
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    if (VST3_DEPLOY)
+        # TODO: implement
+    endif()
+endif()
 
 # -----------------------------------------------------------------------------
 # Source Files
