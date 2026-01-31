@@ -70,8 +70,6 @@ juce_add_plugin(GpuaSourceSeparation
 # directories to the target. Without this, #include <JuceHeader.h> will fail.
 juce_generate_juce_header(GpuaSourceSeparation)
 
-#juce_add_bundle_resources_directory(GpuaSourceSeparation_VST3 ${rt3s_model_SOURCE_DIR})
-
 if (CMAKE_DEBUG_VARS)
     include (${CMAKE_CURRENT_LIST_DIR}/debug_vars.cmake)
 endif()
@@ -80,8 +78,6 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     if (VST3_DEPLOY)
         add_custom_command(TARGET GpuaSourceSeparation POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy "${rt3s_model_SOURCE_DIR}/params.bw" "${CMAKE_BINARY_DIR}/SoundSourceSeparation/rt3s_plugin/GpuaSourceSeparation_artefacts/$<CONFIG>/VST3/gpuaudio_source_separation.vst3/Contents/Resources/params.bw"
-            #            COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_BINARY_DIR}/SoundSourceSeparation/rt3s_plugin/GpuaSourceSeparation_artefacts/$<CONFIG>/VST3/gpuaudio_source_separation.vst3" "${install_dir}/gpuaudio_source_separation.vst3"
-            #            COMMAND ${CMAKE_COMMAND} -E echo "VST3 copied to ${install_dir}"
         )
     endif()
 endif()
@@ -90,8 +86,6 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     if (AUv2_DEPLOY)
         add_custom_command(TARGET GpuaSourceSeparation POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy "${rt3s_model_SOURCE_DIR}/params.bw" "${CMAKE_BINARY_DIR}/SoundSourceSeparation/rt3s_plugin/GpuaSourceSeparation_artefacts/$<CONFIG>/AU/gpuaudio_source_separation.component/Contents/Resources/params.bw"
-            #            COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_BINARY_DIR}/SoundSourceSeparation/rt3s_plugin/GpuaSourceSeparation_artefacts/$<CONFIG>/AU/gpuaudio_source_separation.component" "${install_dir}/gpuaudio_source_separation.component"
-            #            COMMAND ${CMAKE_COMMAND} -E echo "AUv2 copied to ${install_dir}"
         )
     endif()
 endif()
