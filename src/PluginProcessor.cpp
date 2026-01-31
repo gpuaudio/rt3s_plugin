@@ -14,8 +14,7 @@ SourceSeparationAudioProcessor::SourceSeparationAudioProcessor()
 {
     auto currentModulePath = ::GetCurrentModulePath();
     auto parentPath = currentModulePath.parent_path();
-    auto paramsPath = parentPath / "params.bw";
-
+    auto paramsPath = parentPath / ".." / "Resources" / "params.bw";
     _proc = createGpuProcessor(paramsPath.string().c_str(), true);
 }
 
