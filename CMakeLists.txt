@@ -35,7 +35,7 @@ endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     list(APPEND plugin_formats AU)
-    # TODO: set install_dir
+    set(install_dir "$ENV{HOME}/Library/Audio/Plug-Ins/Components")
 endif()
 
 juce_add_plugin(GpuaSourceSeparation
@@ -67,7 +67,7 @@ include (${CMAKE_CURRENT_LIST_DIR}/debug_vars.cmake)
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     if (VST3_DEPLOY)
         add_custom_command(TARGET GpuaSourceSeparation POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy "${rt3s_model_SOURCE_DIR}/params.bw" "${CMAKE_BINARY_DIR}/SoundSourceSeparation/rt3s_plugin/GpuaSourceSeparation_artefacts/$<CONFIG>/VST3/gpuaudio_source_separation.vst3/Contents/x86_64-win"
+            COMMAND ${CMAKE_COMMAND} -E copy "${rt3s_model_SOURCE_DIR}/params.bw" "${CMAKE_BINARY_DIR}/SoundSourceSeparation/rt3s_plugin/GpuaSourceSeparation_artefacts/$<CONFIG>/VST3/gpuaudio_source_separation.vst3/Contents/Resources"
             COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_BINARY_DIR}/SoundSourceSeparation/rt3s_plugin/GpuaSourceSeparation_artefacts/$<CONFIG>/VST3/gpuaudio_source_separation.vst3" "${install_dir}/gpuaudio_source_separation.vst3"
             COMMAND ${CMAKE_COMMAND} -E echo "VST3 copied to ${install_dir}"
         )
@@ -75,8 +75,12 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 endif()
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    if (VST3_DEPLOY)
-        # TODO: implement
+    if (AUv2_DEPLOY)
+        add_custom_command(TARGET GpuaSourceSeparation_AU POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy "${rt3s_model_SOURCE_DIR}/params.bw" "${CMAKE_BINARY_DIR}/SoundSourceSeparation/rt3s_plugin/GpuaSourceSeparation_artefacts/$<CONFIG>/AU/gpuaudio_source_separation.component/Contents/Resources/params.bw"
+            COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_BINARY_DIR}/SoundSourceSeparation/rt3s_plugin/GpuaSourceSeparation_artefacts/$<CONFIG>/AU/gpuaudio_source_separation.component" "${install_dir}/gpuaudio_source_separation.component"
+            COMMAND ${CMAKE_COMMAND} -E echo "AUv2 copied to ${install_dir}"
+        )
     endif()
 endif()
 
